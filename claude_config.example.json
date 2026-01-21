@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "gmail": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/fac_mcp/dist/index.js"
+      ]
+    }
+  }
+}
+
