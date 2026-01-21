@@ -131,9 +131,9 @@ The server exposes two tools:
 
 ## Screenshots
 
-<img width="1054" height="687" alt="image" src="https://github.com/user-attachments/assets/d16bc0d7-f173-4a43-af98-a705f482d8fb" />
+<img width="740" alt="image" src="https://github.com/user-attachments/assets/d16bc0d7-f173-4a43-af98-a705f482d8fb" />
 
-<img width="1240" height="393" alt="image" src="https://github.com/user-attachments/assets/c7af8084-9606-4169-a7fc-16c79d905de7" />
+<img width="450" alt="image" src="https://github.com/user-attachments/assets/c7af8084-9606-4169-a7fc-16c79d905de7" />
 
 
 ## Known Issues
