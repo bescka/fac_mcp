@@ -25,6 +25,7 @@ Then configure the MCP client to use the server. See [Setup](#setup) for detaile
 
 - **get_unread_emails**: Retrieves all unread emails with sender, subject, body/snippet, email ID, and thread ID
 - **create_draft_reply**: Creates a properly threaded draft reply to any email
+- **get_space_picture_of_the_day**: (Optional) Fetches NASA Astronomy Picture of the Day (APOD) and returns a ready-to-paste “Did you know? Space Edition!” section with clear credits/references. The AI should ask before including this.
 
 ### Architecture
 
@@ -128,6 +129,21 @@ Once configured, the Gmail tools will be available in Claude Code sessions.
 The server exposes two tools:
 - `get_unread_emails`: No parameters, returns array of unread emails
 - `create_draft_reply`: Requires `emailId` (string) and `replyBody` (string)
+
+### Optional Space Extension (NASA APOD)
+
+If enabled, the server also exposes:
+- `get_space_picture_of_the_day`: Optional params `date` (YYYY-MM-DD) and `maxDaysBack` (defaults to 10, max 30). If today’s APOD fails, it automatically tries previous days.
+
+**Opt-in flow (recommended):**
+- The AI should ask: “Would you like to include a ‘Did you know? Space Edition!’ section with today’s NASA picture of the day?”
+- If you say yes, it calls `get_space_picture_of_the_day` and appends the returned `spaceEditionBlock` after the normal reply when calling `create_draft_reply`.
+
+### Space Extension Configuration
+
+Environment variables:
+- `ENABLE_SPACE_PICTURE_OF_THE_DAY`: Optional. Defaults to `true`. Set to `false` to hide/disable the space tools entirely.
+- `NASA_API_KEY`: Optional. Defaults to `DEMO_KEY`. Get a free key from `https://api.nasa.gov/`.
 
 ## Screenshots
 
