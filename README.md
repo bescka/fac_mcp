@@ -135,7 +135,7 @@ The server exposes two tools:
 If enabled, the server also exposes:
 - `get_space_picture_of_the_day`: Optional params `date` (YYYY-MM-DD) and `maxDaysBack` (defaults to 10, max 30). If today’s APOD fails, it automatically tries previous days.
 
-**Opt-in flow (recommended):**
+**Opt-in flow:**
 - The AI should ask: “Would you like to include a ‘Did you know? Space Edition!’ section with today’s NASA picture of the day?”
 - If you say yes, it calls `get_space_picture_of_the_day` and appends `spaceEditionBlock` (plain) or `spaceEditionBlockHtml` (HTML) after the normal reply.
 - If using `spaceEditionBlockHtml`, call `create_draft_reply` with `format: "html"` so Gmail renders the image.
@@ -144,13 +144,21 @@ If enabled, the server also exposes:
 
 Environment variables:
 - `ENABLE_SPACE_PICTURE_OF_THE_DAY`: Optional. Defaults to `true`. Set to `false` to hide/disable the space tools entirely.
-- `NASA_API_KEY`: Optional. Defaults to `DEMO_KEY`. Get a free key from `https://api.nasa.gov/`.
+- `NASA_API_KEY`: Optional. Defaults to `DEMO_KEY`, which works with rate limiting. Get a free key from `https://api.nasa.gov/`.
 
 ## Screenshots
 
 <img width="650" alt="image" src="https://github.com/user-attachments/assets/d16bc0d7-f173-4a43-af98-a705f482d8fb" />
 
 <img width="450" alt="image" src="https://github.com/user-attachments/assets/c7af8084-9606-4169-a7fc-16c79d905de7" />
+
+with the APOD extension: 
+
+<img width="1089" height="862" alt="image" src="https://github.com/user-attachments/assets/9bd36951-e925-4abc-bc86-db97b8119869" />
+
+draft extract: 
+
+<img width="1029" height="1062" alt="image" src="https://github.com/user-attachments/assets/4987d1cf-a86f-4961-a735-2473860b2a84" />
 
 
 ## Known Issues
