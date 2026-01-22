@@ -35,6 +35,8 @@ describe('APODService', () => {
     expect(result.mediaUrl).toBe('https://example.com/image.jpg');
     expect(result.creditsText).toContain('NASA Astronomy Picture of the Day');
     expect(result.spaceEditionBlock).toContain('Did you know? Space Edition!');
+    expect(result.spaceEditionBlockHtml).toContain('Did you know? Space Edition!');
+    expect(result.spaceEditionBlockHtml).toContain('<img');
   });
 
   it('walks back by date when the requested date fails', async () => {

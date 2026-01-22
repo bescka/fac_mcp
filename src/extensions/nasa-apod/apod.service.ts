@@ -32,6 +32,7 @@ export type SpacePictureOfTheDay = {
   };
   creditsText: string;
   spaceEditionBlock: string;
+  spaceEditionBlockHtml: string;
 };
 
 export class APODService {
@@ -103,6 +104,11 @@ export class APODService {
     const apodPageUrl = this.apodPageUrlForDate(apod.date);
     const creditsText = this.buildCreditsText(apod, apodPageUrl);
     const spaceEditionBlock = this.buildSpaceEditionBlock(apod, apodPageUrl, creditsText);
+    const spaceEditionBlockHtml = this.buildSpaceEditionBlockHtml(
+      apod,
+      apodPageUrl,
+      creditsText
+    );
 
     return {
       requestedDate,
@@ -118,6 +124,7 @@ export class APODService {
       },
       creditsText,
       spaceEditionBlock,
+      spaceEditionBlockHtml,
     };
   }
 
@@ -160,6 +167,40 @@ export class APODService {
     return lines.join('\n');
   }
 
+  private buildSpaceEditionBlockHtml(
+    apod: ApodApiResponse,
+    apodPageUrl: string,
+    creditsText: string
+  ): string {
+    const title = this.escapeHtml(apod.title);
+    const date = this.escapeHtml(apod.date);
+    const explanation = this.escapeHtml(
+      this.truncate(this.normalizeWhitespace(apod.explanation), 520)
+    );
+    const mediaUrl = this.escapeHtml(apod.url);
+    const hdUrl = apod.hdurl ? this.escapeHtml(apod.hdurl) : undefined;
+    const pageUrl = this.escapeHtml(apodPageUrl);
+    const credits = this.escapeHtml(creditsText);
+
+    const mediaHtml =
+      apod.media_type === 'image'
+        ? `<a href="${mediaUrl}"><img src="${mediaUrl}" alt="${title}" style="max-width:100%;height:auto;border:0;" /></a>`
+        : `<a href="${mediaUrl}">${mediaUrl}</a>`;
+
+    const hdLine = hdUrl ? `<div><strong>HD:</strong> <a href="${hdUrl}">${hdUrl}</a></div>` : '';
+
+    return [
+      `<hr/>`,
+      `<h3>Did you know? Space Edition!</h3>`,
+      `<div><strong>NASA APOD (${date}) — ${title}</strong></div>`,
+      `<p>${explanation}</p>`,
+      `<div>${mediaHtml}</div>`,
+      `<div><strong>More:</strong> <a href="${pageUrl}">${pageUrl}</a></div>`,
+      hdLine,
+      `<div style="font-size:0.9em;color:#555;">${credits}</div>`,
+    ].join('\n');
+  }
+
   private apodPageUrlForDate(date: string): string {
     // Human-facing APOD page: https://apod.nasa.gov/apod/apYYMMDD.html
     // Example: 2026-01-22 -> ap260122.html
@@ -176,6 +217,15 @@ export class APODService {
 
   private normalizeWhitespace(text: string): string {
     return text.replace(/\s+/g, ' ').trim();
+  }
+
+  private escapeHtml(text: string): string {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   private clampInt(value: number, min: number, max: number): number {

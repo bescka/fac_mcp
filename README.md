@@ -128,7 +128,7 @@ Once configured, the Gmail tools will be available in Claude Code sessions.
 
 The server exposes two tools:
 - `get_unread_emails`: No parameters, returns array of unread emails
-- `create_draft_reply`: Requires `emailId` (string) and `replyBody` (string)
+- `create_draft_reply`: Requires `emailId` (string) and `replyBody` (string). Optional `format: "html"` to create an HTML draft.
 
 ### Optional Space Extension (NASA APOD)
 
@@ -137,7 +137,8 @@ If enabled, the server also exposes:
 
 **Opt-in flow (recommended):**
 - The AI should ask: “Would you like to include a ‘Did you know? Space Edition!’ section with today’s NASA picture of the day?”
-- If you say yes, it calls `get_space_picture_of_the_day` and appends the returned `spaceEditionBlock` after the normal reply when calling `create_draft_reply`.
+- If you say yes, it calls `get_space_picture_of_the_day` and appends `spaceEditionBlock` (plain) or `spaceEditionBlockHtml` (HTML) after the normal reply.
+- If using `spaceEditionBlockHtml`, call `create_draft_reply` with `format: "html"` so Gmail renders the image.
 
 ### Space Extension Configuration
 

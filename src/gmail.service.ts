@@ -81,7 +81,15 @@ export class GmailService {
    */
   async createDraftReply(
     emailId: string,
-    replyBody: string
+    replyBody: string,
+    options?: {
+      /**
+       * Defaults to 'text/plain'. Use 'text/html' to create an HTML draft.
+       * Note: remote images referenced in HTML may be blocked by the email client
+       * until the user chooses to display images.
+       */
+      contentType?: 'text/plain' | 'text/html';
+    }
   ): Promise<{ draftId: string; threadId: string }> {
     // Fetch original message for threading info
     const originalMessage = await this.gmail.users.messages.get({
@@ -119,7 +127,9 @@ export class GmailService {
       emailLines.push(`References: ${messageIdHeader}`);
     }
 
-    emailLines.push('Content-Type: text/plain; charset=utf-8');
+    const contentType = options?.contentType ?? 'text/plain';
+    emailLines.push('MIME-Version: 1.0');
+    emailLines.push(`Content-Type: ${contentType}; charset=utf-8`);
     emailLines.push(''); // Empty line separates headers from body
     emailLines.push(replyBody);
 

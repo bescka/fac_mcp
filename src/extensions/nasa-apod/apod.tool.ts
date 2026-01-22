@@ -41,6 +41,8 @@ const SPACE_TOOL_DESCRIPTION =
     '',
     'IMPORTANT: Ask the user for consent before calling this tool (opt-in). Only include the Space Edition section if the user says yes.',
     'When included, always keep the provided credits/references in the draft.',
+    '',
+    'NOTE: This tool does NOT create a Gmail draft by itself. If the user asked you to draft a reply, you must still compose the full reply (normal reply first, Space Edition after) and then call `create_draft_reply` to save the draft.',
   ].join('\n');
 
 export function createNasaApodTools(apodService: APODService): McpTool[] {

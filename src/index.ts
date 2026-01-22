@@ -7,6 +7,7 @@ import {
 import { google } from 'googleapis';
 import { GmailService } from './gmail.service.js';
 import { APODService, createNasaApodTools } from './extensions/nasa-apod/index.js';
+import { assertReplyBodyHasMainReplyBeforeSpaceEdition } from './reply.validation.js';
 import 'dotenv/config';
 
 /**
@@ -148,7 +149,14 @@ function registerTools(
       definition: {
         name: 'create_draft_reply',
         description:
-          'Creates a draft reply to an existing email. Maintains proper email threading by linking to the original message.',
+          [
+            'Creates a draft reply to an existing email. Maintains proper email threading by linking to the original message.',
+            '',
+            'You MUST call this tool to actually create the Gmail draft. Do not stop after fetching optional context (e.g. Space Picture of the Day).',
+            'If the tool `get_space_picture_of_the_day` is available, ask the user whether they want to include a "Did you know? Space Edition!" section.',
+            '- If user says yes: call `get_space_picture_of_the_day`, append `spaceEditionBlockHtml` after the normal reply, and set `format: "html"` so the image renders.',
+            '- If user says no: do not call the space tool; draft a normal reply.',
+          ].join('\n'),
         inputSchema: {
           type: 'object',
           properties: {
@@ -161,6 +169,11 @@ function registerTools(
               type: 'string',
               description: 'The body text of the reply',
             },
+            format: {
+              type: 'string',
+              description:
+                'Optional: "plain" (default) or "html". Use "html" if replyBody contains HTML (e.g. Space Edition block with an <img>).',
+            },
           },
           required: ['emailId', 'replyBody'],
         },
@@ -169,13 +182,26 @@ function registerTools(
         const { emailId, replyBody } = (args ?? {}) as {
           emailId?: string;
           replyBody?: string;
+          format?: string;
         };
 
         if (!emailId || !replyBody) {
           throw new Error('emailId and replyBody are required');
         }
 
-        const result = await gmailService.createDraftReply(emailId, replyBody);
+        const format = (args as { format?: string })?.format;
+        const draftFormat =
+          typeof format === 'string' && format.trim().toLowerCase() === 'html'
+            ? 'html'
+            : 'plain';
+
+        assertReplyBodyHasMainReplyBeforeSpaceEdition(replyBody, draftFormat);
+
+        const contentType = draftFormat === 'html' ? 'text/html' : 'text/plain';
+
+        const result = await gmailService.createDraftReply(emailId, replyBody, {
+          contentType,
+        });
         return {
           success: true,
           draftId: result.draftId,

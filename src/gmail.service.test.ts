@@ -232,6 +232,42 @@ describe('GmailService', () => {
       expect(rawMessage).toContain('In-Reply-To: <original-message-id>');
       expect(rawMessage).toContain('References: <original-message-id>');
       expect(rawMessage).toContain('This is my reply');
+      expect(rawMessage).toContain('Content-Type: text/plain; charset=utf-8');
+    });
+
+    it('should create an HTML draft when contentType is text/html', async () => {
+      const mockOriginalMessage = {
+        data: {
+          id: 'msg1',
+          threadId: 'thread1',
+          payload: {
+            headers: [
+              { name: 'From', value: 'original@example.com' },
+              { name: 'Subject', value: 'Original Subject' },
+              { name: 'Message-ID', value: '<original-message-id>' },
+            ],
+          },
+        },
+      };
+
+      mockGmailClient.users.messages.get.mockResolvedValue(mockOriginalMessage);
+      mockGmailClient.users.drafts.create.mockResolvedValue({
+        data: { id: 'draft1', message: { id: 'draft-msg1', threadId: 'thread1' } },
+      });
+
+      await gmailService.createDraftReply('msg1', '<b>Hello</b>', {
+        contentType: 'text/html',
+      });
+
+      const createCall = mockGmailClient.users.drafts.create.mock.calls[0][0];
+      const base64url = createCall.requestBody.message.raw;
+      const base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+      const padding = base64.length % 4;
+      const paddedBase64 = base64 + (padding ? '='.repeat(4 - padding) : '');
+      const rawMessage = Buffer.from(paddedBase64, 'base64').toString();
+
+      expect(rawMessage).toContain('Content-Type: text/html; charset=utf-8');
+      expect(rawMessage).toContain('<b>Hello</b>');
     });
 
     it('should handle missing original message', async () => {
